@@ -11,29 +11,31 @@ typedef struct flightInfo {
     int delayCounter;//Ucagin bekledigi saat 0 1 2 3
     int status;//0 inmedi 1 iniyor 2 kilitlendi 3 yonlendirildi
     bool isLast;//Ucak listedeki son ucak mi !
-
 } flightInfo;
-void writeTxt(flightInfo *planeList)
-{
-    if(planeList->nextFlight->flightId < 30 && planeList->nextFlight->flightId > 0)
-    {
+
+void writeTxt(flightInfo *planeList) {
+    if (planeList->nextFlight->flightId < 100 && planeList->nextFlight->flightId > 0) {
         FILE *output;
-        output = fopen("output.txt","w");
+        output = fopen("output.txt", "w");
         planeList = planeList->nextFlight;
         functionStart1:
         if (planeList->isLast != true) {
-            fprintf(output,"ID : %d\tPRIORITY : %d\t DESIRED LAND TIME : %d\tLANDTIME : %d\tDELAYTIME : %d\tDEPART TIME : %d\n", planeList->flightId, planeList->priority,planeList->desiredLandingTime-planeList->delayCounter,planeList->desiredLandingTime, planeList->delayCounter,planeList->desiredLandingTime+1);
+            fprintf(output,
+                    "ID : %d\tPRIORITY : %d\t DESIRED LAND TIME : %d\tLANDTIME : %d\tDELAYTIME : %d\tDEPART TIME : %d\n",
+                    planeList->flightId, planeList->priority, planeList->desiredLandingTime - planeList->delayCounter,
+                    planeList->desiredLandingTime, planeList->delayCounter, planeList->desiredLandingTime + 1);
             planeList = planeList->nextFlight;
             goto functionStart1;
         } else {
-            fprintf(output,"ID : %d\tPRIORITY : %d\t DESIRED LAND TIME : %d\tLANDTIME : %d\tDELAYTIME : %d\tDEPART TIME : %d\n", planeList->flightId, planeList->priority,planeList->desiredLandingTime-planeList->delayCounter,planeList->desiredLandingTime, planeList->delayCounter,planeList->desiredLandingTime+1);
+            fprintf(output,
+                    "ID : %d\tPRIORITY : %d\t DESIRED LAND TIME : %d\tLANDTIME : %d\tDELAYTIME : %d\tDEPART TIME : %d\n",
+                    planeList->flightId, planeList->priority, planeList->desiredLandingTime - planeList->delayCounter,
+                    planeList->desiredLandingTime, planeList->delayCounter, planeList->desiredLandingTime + 1);
             fclose(output);
             return;
         }
-    }
-    else
+    } else
         return;
-
 }
 
 void showList(flightInfo *planeList) { //Listenin elemanlarini gosterir ya da devam eder
@@ -41,7 +43,6 @@ void showList(flightInfo *planeList) { //Listenin elemanlarini gosterir ya da de
     planeList = planeList->nextFlight;
     printf("\n\n\n\n1) Listeyi goruntule\n2) Bir sonraki ucaga gec\nGirdiniz :");
     scanf("%d", &userInput);
-
     switch (userInput) {
         case 1:
             break;
@@ -54,15 +55,20 @@ void showList(flightInfo *planeList) { //Listenin elemanlarini gosterir ya da de
     }
     functionStart:
     if (planeList->isLast != true) {
-        printf("ID : %d\tPRIORITY : %d\t DESIRED LAND TIME : %d\tLANDTIME : %d\tDELAYTIME : %d\tDEPART TIME : %d\n", planeList->flightId, planeList->priority,planeList->desiredLandingTime-planeList->delayCounter,planeList->desiredLandingTime, planeList->delayCounter,planeList->desiredLandingTime+1);
+        printf("ID : %d\tPRIORITY : %d\t DESIRED LAND TIME : %d\tLANDTIME : %d\tDELAYTIME : %d\tDEPART TIME : %d\n",
+               planeList->flightId, planeList->priority, planeList->desiredLandingTime - planeList->delayCounter,
+               planeList->desiredLandingTime, planeList->delayCounter, planeList->desiredLandingTime + 1);
         planeList = planeList->nextFlight;
         goto functionStart;
     } else {
-        printf("ID : %d\tPRIORITY : %d\t DESIRED LAND TIME : %d\tLANDTIME : %d\tDELAYTIME : %d\tDEPART TIME : %d\n", planeList->flightId, planeList->priority,planeList->desiredLandingTime-planeList->delayCounter,planeList->desiredLandingTime, planeList->delayCounter,planeList->desiredLandingTime+1);
+        printf("ID : %d\tPRIORITY : %d\t DESIRED LAND TIME : %d\tLANDTIME : %d\tDELAYTIME : %d\tDEPART TIME : %d\n",
+               planeList->flightId, planeList->priority, planeList->desiredLandingTime - planeList->delayCounter,
+               planeList->desiredLandingTime, planeList->delayCounter, planeList->desiredLandingTime + 1);
         return;
     }
 }
-int statusCheck(int status, int delayCounter, int flightId) {
+
+int statusCheck(int status, int delayCounter, int flightId, int desiredLandingTime) {
     if (delayCounter == 3) {
         if (status == 1)//Ucak kilitlenir
         {
@@ -74,41 +80,43 @@ int statusCheck(int status, int delayCounter, int flightId) {
         if (status == 0) {
             return 3;
         }
-
+    }
+    if (desiredLandingTime > 24) {
+        printf("%d ID li ucak Saat kapasitesini astigi icin ertelendi !\n", flightId);
+        return 3;
     }
     return status; //Ayni degeri geri yolla
 }
+
 flightInfo change(flightInfo *planeList, flightInfo newPlane) {
     flightInfo temp;
     temp = newPlane;
-
     newPlane.flightId = planeList->flightId;
     newPlane.priority = planeList->priority;
     newPlane.desiredLandingTime = planeList->desiredLandingTime;
     newPlane.delayCounter = planeList->delayCounter;
     newPlane.status = planeList->status;
-
     planeList->flightId = temp.flightId;
     planeList->priority = temp.priority;
     planeList->desiredLandingTime = temp.desiredLandingTime;
     planeList->delayCounter = temp.delayCounter;
     planeList->status = temp.status;
-
     newPlane.desiredLandingTime++;
     newPlane.delayCounter++;
-    newPlane.status = statusCheck(newPlane.status, newPlane.delayCounter, newPlane.flightId);
-
-
+    newPlane.status = statusCheck(newPlane.status, newPlane.delayCounter, newPlane.flightId,
+                                  newPlane.desiredLandingTime);
     printf("\n%d Id li ucak %d Id li ucagin yerine eklendi O(%d) S(%d) D(%d)\n", planeList->flightId, newPlane.flightId,
            planeList->priority, planeList->desiredLandingTime, planeList->delayCounter);
     return newPlane;
 }
+
 flightInfo compareFlights(flightInfo *planeList, flightInfo newPlane) {
     if (planeList->status == 2) //Kontrol edilen ucak kitli maalesef
     {
         newPlane.desiredLandingTime++;
         newPlane.delayCounter++;
-        newPlane.status = statusCheck(newPlane.status, newPlane.delayCounter, newPlane.flightId);
+        newPlane.status = statusCheck(newPlane.status, newPlane.delayCounter, newPlane.flightId,
+                                      newPlane.desiredLandingTime);
         printf("\n%d Id li ucak (%d) idli ucak yuzunden ertelendi O(%d) S(%d) D(%d)\n", newPlane.flightId,
                planeList->flightId, newPlane.priority, newPlane.desiredLandingTime, newPlane.delayCounter);
         return newPlane;
@@ -124,12 +132,14 @@ flightInfo compareFlights(flightInfo *planeList, flightInfo newPlane) {
     } else {
         newPlane.desiredLandingTime++;
         newPlane.delayCounter++;
-        newPlane.status = statusCheck(newPlane.status, newPlane.delayCounter, newPlane.flightId);
+        newPlane.status = statusCheck(newPlane.status, newPlane.delayCounter, newPlane.flightId,
+                                      newPlane.desiredLandingTime);
         printf("\n%d Id li ucak (%d) idli ucak yuzunden ertelendi O(%d) S(%d) D(%d)\n", newPlane.flightId,
                planeList->flightId, newPlane.priority, newPlane.desiredLandingTime, newPlane.delayCounter);
         return newPlane;
     }
 }
+
 void addFlight(flightInfo *planeList, flightInfo newPlane) {
     flightInfo *firstFlightAddress = planeList;
     showList(planeList);
@@ -150,7 +160,8 @@ void addFlight(flightInfo *planeList, flightInfo newPlane) {
         } else {
             planeList->status = newPlane.status;
         }
-        planeList->status = statusCheck(planeList->status, planeList->delayCounter, planeList->flightId);
+        planeList->status = statusCheck(planeList->status, planeList->delayCounter, planeList->flightId,
+                                        planeList->desiredLandingTime);
         planeList->isLast = true;
         printf("\n%d Id li ucak eklendi O(%d) S(%d) D(%d)\n", planeList->flightId, planeList->priority,
                planeList->desiredLandingTime, planeList->delayCounter);
@@ -159,7 +170,6 @@ void addFlight(flightInfo *planeList, flightInfo newPlane) {
         planeList = planeList->nextFlight;
         //  printf("(%d,%d)\t",newPlane.flightId,planeList->flightId); //Kontrol edilenler
         if (planeList->desiredLandingTime == newPlane.desiredLandingTime) {
-            printf("tuttu\t");
             flightInfo Result = compareFlights(planeList, newPlane);
             if (Result.status == 3) {
                 printf("\n\nSabiha Gokcen havalimanina yonlendirildi (%d)\n\n", Result.flightId);
@@ -183,9 +193,6 @@ void startPlaneList() {
     while (!feof(input)) {
         flightInfo newPlane;
         fscanf(input, "%d %d %d\n", &newPlane.priority, &newPlane.flightId, &newPlane.desiredLandingTime);
-        if (newPlane.flightId == 17) {
-            //  printf("Zsaofasf");
-        }
         newPlane.delayCounter = 0;
         newPlane.status = 0;
         if (once == false) {
@@ -200,8 +207,11 @@ void startPlaneList() {
         planeCounter++;
     }
     printf("Liste bitti \n");
+    writeTxt(planeList);
     showList(planeList);
+
 }
+
 int main() {
     startPlaneList();
     return 0;
